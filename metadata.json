@@ -1,0 +1,6 @@
+{
+  "name": "سين وجيم مع أمين",
+  "description": "تطبيق مسابقات ثقافي مغربي تفاعلي",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
