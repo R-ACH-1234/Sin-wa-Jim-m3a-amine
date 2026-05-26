@@ -68,11 +68,12 @@ export default function MoroccanLayout({
   };
 
   const currentPath = location.pathname;
+  const isQuizPage = currentPath.startsWith('/quiz');
 
   return (
     <div className={`min-h-screen flex flex-col items-center justify-between font-sans select-none overflow-x-hidden relative transition-colors duration-500 ${
       theme === 'dark' 
-        ? 'bg-[#030c0a] text-slate-100' 
+        ? (isQuizPage ? 'bg-[#0d2d23] text-slate-100' : 'bg-[#030c0a] text-slate-100') 
         : 'bg-[#fcfaf5] text-emerald-950'
     }`}>
       
@@ -82,8 +83,12 @@ export default function MoroccanLayout({
         {/* Soft elegant gradient backdrop */}
         <div className={`absolute inset-0 transition-all duration-700 ${
           theme === 'dark' 
-            ? 'bg-gradient-to-b from-[#020b08] via-[#051411] to-[#0a1820]' 
-            : 'bg-gradient-to-b from-[#fbf9f4] via-[#f7f3ec] to-[#ebdcc8]'
+            ? (isQuizPage 
+                ? 'bg-gradient-to-b from-[#144335] via-[#0e3126] to-[#082019]' 
+                : 'bg-gradient-to-b from-[#020b08] via-[#051411] to-[#0a1820]') 
+            : (isQuizPage
+                ? 'bg-gradient-to-b from-[#fbf9f2] via-[#f5efe3] to-[#ebdcc4]'
+                : 'bg-gradient-to-b from-[#fbf9f4] via-[#f7f3ec] to-[#ebdcc8]')
         }`} />
 
         {/* Delicate premium geometric Zellij lattice watermarked pattern */}
@@ -92,6 +97,25 @@ export default function MoroccanLayout({
             ? 'bg-[radial-gradient(#d97706_1px,transparent_1px)]' 
             : 'bg-[radial-gradient(#047857_1px,transparent_1px)]'
         } [background-size:20px_20px]`} />
+
+        {/* Giant Watermarked Background Logo (Subtle, elegant background element for game immersion) */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-[500px] sm:h-[500px] pointer-events-none select-none z-0 flex items-center justify-center transition-all duration-700 ${
+          theme === 'dark'
+            ? (isQuizPage ? 'opacity-[0.14]' : 'opacity-[0.04]')
+            : (isQuizPage ? 'opacity-[0.16]' : 'opacity-[0.06]')
+        }`}>
+          <motion.img 
+            animate={isQuizPage ? { rotate: 0 } : { rotate: 360 }}
+            transition={isQuizPage ? { duration: 0.8, ease: "easeOut" } : { repeat: Infinity, duration: 80, ease: "linear" }}
+            src="/logo.png"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/logo.jpg';
+            }}
+            alt="Logo background watermark"
+            className="w-full h-full object-contain filter select-none rounded-[32px]"
+          />
+        </div>
 
         {/* Ambient top glowing aura */}
         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] rounded-full filter blur-[100px] opacity-[0.14] transition-all duration-700 ${
@@ -116,14 +140,14 @@ export default function MoroccanLayout({
       </div>
 
       {/* 2. TOP HEADER COHESIVE SYSTEM BAR */}
-      <header className={`w-full max-w-lg px-4.5 pt-5 pb-4.5 flex items-center justify-between z-10 shrink-0 relative ${
+      <header className={`w-full max-w-md px-4.5 pt-5 pb-4.5 flex items-center justify-between z-10 shrink-0 relative ${
         theme === 'dark' 
           ? 'border-b border-amber-500/10 bg-[#020b08]/40 backdrop-blur-md' 
           : 'border-b border-emerald-950/5 bg-white/45 backdrop-blur-md'
       }`}>
         
         {/* User Badge / Navigation Block */}
-        <div className="flex items-center space-x-2 space-x-reverse">
+        <div className="flex items-center space-x-1 sm:space-x-2 space-x-reverse">
           {showBackButton ? (
             <button 
               onClick={() => {
@@ -131,13 +155,13 @@ export default function MoroccanLayout({
                 if (backTo) navigate(backTo);
                 else navigate(-1);
               }}
-              className={`p-2.5 rounded-xl transition-all duration-300 border flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer ${
+              className={`p-2 rounded-xl transition-all duration-300 border flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer ${
                 theme === 'dark' 
                   ? 'bg-slate-900/80 border-amber-500/15 text-amber-400 hover:bg-slate-900' 
                   : 'bg-white border-emerald-900/10 text-emerald-800 hover:bg-slate-50'
               }`}
             >
-              <ArrowLeft className="w-4.5 h-4.5" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
           ) : user ? (
             <div 
@@ -145,18 +169,18 @@ export default function MoroccanLayout({
                 if (soundEnabled) soundEffects.playClick();
                 navigate('/profile');
               }}
-              className={`flex items-center space-x-2 space-x-reverse cursor-pointer p-1.5 pr-2.5 rounded-xl transition-all border ${
+              className={`flex items-center space-x-1.5 space-x-reverse cursor-pointer p-1 sm:p-1.5 pr-2 sm:pr-2.5 rounded-xl transition-all border ${
                 theme === 'dark' 
                   ? 'bg-[#101f1b]/60 border-emerald-800/20 hover:bg-[#101f1b]/90 text-amber-200' 
                   : 'bg-white/80 border-emerald-900/10 hover:bg-white text-emerald-950 shadow-sm'
               }`}
             >
-              <div className="w-7.5 h-7.5 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-base shadow-sm">
+              <div className="w-6.5 h-6.5 sm:w-7.5 sm:h-7.5 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-sm shadow-sm shrink-0">
                 {user.avatar || '🧑‍💻'}
               </div>
-              <div className="text-right">
-                <div className="text-[9px] opacity-70 leading-none">مستوى {user.level}</div>
-                <div className="text-[11px] font-bold leading-normal truncate max-w-[70px]">{user.username}</div>
+              <div className="text-right hidden min-[390px]:block">
+                <div className="text-[8px] sm:text-[9px] opacity-70 leading-none">مستوى {user.level}</div>
+                <div className="text-[10px] sm:text-[11px] font-bold leading-normal truncate max-w-[55px] sm:max-w-[70px]">{user.username}</div>
               </div>
             </div>
           ) : (
@@ -165,24 +189,24 @@ export default function MoroccanLayout({
               <span className="text-amber-500 font-extrabold">وج</span>
             </div>
           )}
-
+          
           {/* User Streak display */}
           {user && (
-            <div className={`p-1.5 px-2.5 rounded-lg border flex items-center space-x-1 space-x-reverse ${
+            <div className={`p-1 sm:p-1.5 px-2 rounded-lg border flex items-center space-x-1 space-x-reverse max-[340px]:hidden ${
               theme === 'dark' 
                 ? 'bg-orange-600/10 border-orange-500/25 text-orange-400' 
                 : 'bg-amber-100/40 border-amber-500/15 text-amber-700'
             }`}>
-              <Flame className="w-3.5 h-3.5 fill-current animate-pulse text-orange-500" />
-              <span className="text-xs font-bold leading-none">{user.streakDays || 1}</span>
+              <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current animate-pulse text-orange-500" />
+              <span className="text-[10px] sm:text-xs font-bold leading-none">{user.streakDays || 1}</span>
             </div>
           )}
         </div>
 
         {/* Center application titles */}
-        <div className="text-center absolute left-1/2 -translate-x-1/2 pointer-events-none flex items-center justify-center space-x-2 space-x-reverse">
-          <AppLogo size="sm" className="w-6.5 h-6.5 drop-shadow-sm" />
-          <h1 className={`font-black text-xs tracking-wide transition-colors duration-300 ${
+        <div className="text-center absolute left-1/2 -translate-x-1/2 pointer-events-none flex items-center justify-center space-x-1 sm:space-x-2 space-x-reverse">
+          <AppLogo size="sm" className="w-6 h-6 sm:w-8 sm:h-8 drop-shadow-sm shrink-0 max-[410px]:hidden" />
+          <h1 className={`font-black text-[10px] sm:text-xs tracking-wide transition-colors duration-300 ${
             theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'
           }`}>
             {title || "سين وجيم"}
@@ -190,7 +214,7 @@ export default function MoroccanLayout({
         </div>
 
         {/* HUD Toolbar controls */}
-        <div className="flex items-center space-x-1.5 space-x-reverse">
+        <div className="flex items-center space-x-1 sm:space-x-1.5 space-x-reverse">
           {/* Admin panel */}
           <button 
             onClick={() => {
@@ -198,39 +222,39 @@ export default function MoroccanLayout({
               setShowAdminPrompt(true);
             }}
             title="لوحة التحكم"
-            className={`p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer max-[420px]:hidden ${
               theme === 'dark' 
                 ? 'bg-slate-900/60 border-amber-500/15 text-yellow-400 hover:bg-slate-900' 
                 : 'bg-white border-emerald-950/5 text-amber-900 hover:bg-slate-50 shadow-sm'
             }`}
           >
-            <ShieldAlert className="w-4 h-4" />
+            <ShieldAlert className="w-3.5 h-3.5" />
           </button>
 
           {/* Theme setting toggle */}
           <button 
             onClick={handleThemeToggle}
             title={theme === 'dark' ? 'الوضع المضيء' : 'الوضع المظلم'}
-            className={`p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
               theme === 'dark' 
                 ? 'bg-slate-900/60 border-amber-500/15 text-amber-300 hover:bg-slate-900' 
                 : 'bg-white border-emerald-950/5 text-emerald-800 hover:bg-slate-50 shadow-sm'
             }`}
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <MoonIcon className="w-3.5 h-3.5" />}
           </button>
 
           {/* SFX audio toggler */}
           <button 
             onClick={handleSoundToggle}
             title={soundEnabled ? 'كتم الصوت' : 'تفعيل الصوت'}
-            className={`p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
               theme === 'dark' 
                 ? 'bg-slate-900/60 border-amber-500/15 text-amber-300 hover:bg-slate-900' 
                 : 'bg-white border-emerald-950/5 text-emerald-800 hover:bg-slate-50 shadow-sm'
             }`}
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
           </button>
         </div>
       </header>
@@ -320,7 +344,7 @@ export default function MoroccanLayout({
                     setAdminCode(e.target.value);
                     setAdminError('');
                   }}
-                  className={`w-full px-4 py-3 rounded-xl text-center font-mono focus:outline-none focus:ring-2 select-text ${
+                  className={`w-full px-4 py-3 rounded-xl text-center font-mono focus:outline-none focus:ring-2 select-text text-base ${
                     theme === 'dark'
                       ? 'bg-slate-950 border border-amber-500/20 text-amber-300 focus:ring-amber-500'
                       : 'bg-slate-100 border border-slate-200 text-emerald-900 focus:ring-emerald-600'

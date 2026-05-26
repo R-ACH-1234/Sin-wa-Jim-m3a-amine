@@ -7,7 +7,7 @@ import { hapticFeedback } from '../utils/vibrator';
 import { HelpCircle, Clock, Volume2, ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const TIMER_DURATION = 15; // 15 seconds per question
+const TIMER_DURATION = 30; // 30 seconds per question
 
 export default function QuizPage() {
   const navigate = useNavigate();

@@ -116,9 +116,16 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
         }`}
       >
         <div className="text-center mb-6 flex flex-col items-center">
-          <AppLogo size="md" className="mb-2" />
-          <h2 className={`text-xl font-black ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'}`}>التسجيل اللحظي كبطل مسابقة</h2>
-          <p className="text-xs opacity-75 mt-1 leading-relaxed">اختر لـقـبـك الـتـنـافـسـي وصورتك الرمزية لبدء تجميع نقاط الـ XP والمنافسة.</p>
+          <AppLogo size="lg" className="mb-3 shrink-0" />
+          <h1 className={`text-3xl font-black transition-colors duration-300 ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-950'}`}>
+            سين وجيم
+          </h1>
+          <p className="text-[10px] font-black tracking-widest text-[#047857] dark:text-amber-500/80 mb-4">تحدي الذكاء والثقافة المغربية</p>
+          
+          <div className="w-full border-t border-dashed border-slate-500/20 pt-4">
+            <h2 className={`text-sm font-bold ${theme === 'dark' ? 'text-amber-200' : 'text-emerald-900'}`}>سجل اسمك وانطلق للتحدي 🌟</h2>
+            <p className="text-[11px] opacity-75 mt-1 leading-relaxed">اختر لـقـبـك الـتـنـافـسـي وصورتك الرمزية لبدء تجميع نقاط الـ XP.</p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -160,7 +167,7 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
               placeholder="مثال: البطل توبقال"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className={`w-full px-4 py-3.5 rounded-xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 select-text ${
+              className={`w-full px-4 py-3.5 rounded-xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 select-text text-base ${
                 theme === 'dark'
                   ? 'bg-slate-900 border border-amber-500/20 text-amber-300'
                   : 'bg-slate-100 border border-[#064e3b]/20 text-emerald-950'

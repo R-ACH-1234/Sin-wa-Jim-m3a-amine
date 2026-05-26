@@ -73,31 +73,34 @@ export default function HomePage() {
         {/* Decorative corner mosaic elements */}
         <div className="absolute top-0 left-0 w-24 h-24 opacity-[0.14] rotate-45 border-4 border-amber-500 rounded-3xl -translate-x-12 -translate-y-12" />
         
-        <div className="flex justify-between items-center relative z-10 w-full">
-          <div className="flex items-center space-x-3.5 space-x-reverse">
-            <AppLogo size="md" className="shrink-0 drop-shadow-md hidden sm:block" />
-            <div>
-              <div className="text-[10px] uppercase tracking-widest font-bold opacity-75 mb-1 text-emerald-500">لوحة البطل الثقافي</div>
-              <h1 className={`text-xl font-black ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'}`}>
-                مرحباً {user?.username} {user?.avatar}
-              </h1>
-              <p className="text-xs opacity-80 mt-1 max-w-[190px] min-[400px]:max-w-[240px] leading-relaxed">
-                أهلاً بك في عالم التحدي والمعرفة. مستعد لمنافسة العباقرة اليوم؟
-              </p>
+        <div className="flex flex-col sm:flex-row items-center gap-4 relative z-10 w-full text-center sm:text-right">
+          {/* Single large elegant logo */}
+          <AppLogo size="md" className="shrink-0 drop-shadow-xl rounded-2xl border-2 border-amber-500/15" />
+          
+          <div className="flex-1 space-y-1">
+            <div className="text-[10px] uppercase tracking-widest font-black opacity-75 text-emerald-600 dark:text-amber-500">
+              لوحة البطل الثقافي
             </div>
+            <h1 className={`text-xl sm:text-2xl font-black ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-950'}`}>
+              مرحباً {user?.username} {user?.avatar}
+            </h1>
+            <p className="text-xs opacity-90 leading-relaxed max-w-sm mx-auto sm:mx-0">
+              أهلاً بك في عالم التحدي والمعرفة. مستعد لمنافسة العباقرة اليوم؟ اختبر معلوماتك واصعد سلم الترتيب!
+            </p>
           </div>
-          <div className="relative shrink-0">
+
+          <div className="relative shrink-0 mt-2 sm:mt-0">
             {/* Level bubble with golden orbit */}
             <motion.div 
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
               className="w-14 h-14 rounded-full border border-dashed border-amber-400 flex items-center justify-center opacity-70"
             />
-            <div className={`absolute inset-0 w-12 h-12 m-auto rounded-full font-black text-center flex flex-col justify-center items-center text-slate-950 shadow-md ${
+            <div className={`absolute inset-0 w-11 h-11 m-auto rounded-full font-black text-center flex flex-col justify-center items-center text-slate-950 shadow-md ${
               theme === 'dark' ? 'bg-gradient-to-r from-amber-500 to-yellow-300' : 'bg-gradient-to-r from-emerald-600 to-teal-400 text-white'
             }`}>
-              <span className="text-[9px] font-bold leading-none uppercase">مستوى</span>
-              <span className="text-sm leading-none mt-0.5">{user?.level || 1}</span>
+              <span className="text-[8px] font-bold leading-none uppercase">مستوى</span>
+              <span className="text-xs leading-none mt-0.5">{user?.level || 1}</span>
             </div>
           </div>
         </div>

@@ -128,6 +128,43 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* 2.5 ADMIN DASHBOARD OPTION FOR NARROW MOBILE USERS */}
+      <div className={`p-4 rounded-2xl border ${
+        theme === 'dark' ? 'bg-slate-950/50 border-slate-500/10' : 'bg-white border-[#064e3b]/10 shadow'
+      }`}>
+        <h3 className="text-xs font-black mb-3 text-amber-500">لوحة تحكم كاتب الأسئلة</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2.5 space-x-reverse pr-1">
+            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
+            <div className="text-right">
+              <span className="text-xs font-bold block">إدارة الأسئلة والمراحل</span>
+              <span className="text-[10px] opacity-70">تعديل كويزات الأسئلة، رفع ملفات JSON، وإدارة الصعوبة</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              if (soundEnabled) soundEffects.playClick();
+              const code = prompt("المرجو إدخال الرمز السري للمسؤول:");
+              if (code === 'rachid1234' || code === 'AMINE-ADMIN-2026') {
+                if (soundEnabled) soundEffects.playFanfare();
+                navigate('/admin');
+              } else if (code !== null) {
+                if (soundEnabled) soundEffects.playWrong();
+                alert('الرمز السري غير صحيح!');
+              }
+            }}
+            className={`py-1.5 px-3.5 rounded-xl text-xs font-black transition-all border shadow ${
+              theme === 'dark' 
+                ? 'bg-slate-900 border-amber-500/25 text-amber-300' 
+                : 'bg-amber-100 border-amber-800/20 text-emerald-900'
+            }`}
+          >
+            دخول المسؤول
+          </button>
+        </div>
+      </div>
+
       {/* 3. HARD DANGER RESETS SETTINGS CARDS */}
       <div className={`p-4 rounded-2xl border ${
         theme === 'dark' ? 'bg-slate-950/50 border-slate-500/10' : 'bg-white border-[#064e3b]/10 shadow'
