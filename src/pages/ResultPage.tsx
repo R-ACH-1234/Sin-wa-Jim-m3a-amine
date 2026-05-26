@@ -57,6 +57,8 @@ export default function ResultPage() {
     calculatedXP = 60;
   }
 
+  const googleDriveShareUrl = 'https://drive.google.com/file/d/1jKHvA_5yow-cqdswg46w08aYsLOqyI8g/view?usp=drivesdk';
+
   const shareText = `🏆 لقد حققت إنجازاً متميزاً في كويز المعرفة المغربية وبطولات شواهد الوطن! 🇲🇦✨
 
 📚 القسم: ${categoryDetails?.name || 'عامة'}
@@ -66,7 +68,7 @@ export default function ResultPage() {
 👑 مستواي الحالي: ${user?.level || 1}
 
 💡 هل يمكنك تحدي مستواي والإجابة عن الأسئلة الصعبة؟ جرب اللعبة الآن!
-🔗 ${window.location.origin}`;
+🔗 ${googleDriveShareUrl}`;
 
   const handleCopy = () => {
     if (soundEnabled) soundEffects.playClick();
@@ -81,7 +83,7 @@ export default function ResultPage() {
       await navigator.share({
         title: 'كويز المعرفة المغربية',
         text: shareText,
-        url: window.location.origin
+        url: googleDriveShareUrl
       });
     } catch (e) {
       console.warn("Native share cancelled or failed:", e);
@@ -341,7 +343,7 @@ export default function ResultPage() {
 
           {/* Facebook share */}
           <a
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}`}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(googleDriveShareUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => soundEnabled && soundEffects.playClick()}

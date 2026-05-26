@@ -87,15 +87,12 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     if (savedQuestionsStr) {
       try {
         const parsed = JSON.parse(savedQuestionsStr);
-        if (Array.isArray(parsed) && parsed.length === INITIAL_QUESTIONS.length) {
-          // Keep text/user edits but force stage alignments to match the official rebalanced INITIAL_QUESTIONS
-          questionsList = parsed.map(pq => {
-            const official = INITIAL_QUESTIONS.find(oq => oq.id === pq.id);
-            if (official) {
-              return { ...pq, stage: official.stage };
-            }
-            return pq;
-          });
+        if (Array.isArray(parsed)) {
+          // Extract custom questions created or uploaded by the administrator/user
+          const customQuestions = parsed.filter(q => q.id && (q.id.startsWith('q-custom-') || q.id.startsWith('q-upload-')));
+          
+          // Use the latest rebalanced INITIAL_QUESTIONS as base to guarantee 3-question stage alignment, then append custom ones
+          questionsList = [...INITIAL_QUESTIONS, ...customQuestions];
           localStorage.setItem('s_g_questions', JSON.stringify(questionsList));
         } else {
           questionsList = INITIAL_QUESTIONS;
