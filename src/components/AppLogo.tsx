@@ -6,7 +6,8 @@ interface AppLogoProps {
 }
 
 export default function AppLogo({ className = '', size = 'md' }: AppLogoProps) {
-  const [imageError, setImageError] = useState(false);
+  const [logoSrc, setLogoSrc] = useState('/logo.png');
+  const [hasError, setHasError] = useState(false);
 
   // Determine width and height classes based on sizing
   const sizeClasses = {
@@ -18,18 +19,26 @@ export default function AppLogo({ className = '', size = 'md' }: AppLogoProps) {
 
   const selectedSize = sizeClasses[size];
 
+  const handleImageError = () => {
+    if (logoSrc === '/logo.png') {
+      setLogoSrc('/logo.jpg');
+    } else {
+      setHasError(true);
+    }
+  };
+
   return (
     <div 
       id="app-custom-logo-container" 
       className={`inline-block select-none relative filter drop-shadow-[0_8px_20px_rgba(4,120,87,0.15)] ${selectedSize} ${className}`}
     >
-      {!imageError ? (
+      {!hasError ? (
         <img 
-          src="/logo.png" 
+          src={logoSrc} 
           alt="لوغو سين وجيم"
           id="custom-logo-image"
           className="w-full h-full object-contain rounded-2xl"
-          onError={() => setImageError(true)}
+          onError={handleImageError}
           referrerPolicy="no-referrer"
         />
       ) : (

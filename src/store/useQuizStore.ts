@@ -41,15 +41,7 @@ interface QuizState {
   resetQuestionsToDefault: () => void;
 }
 
-const DEFAULT_LEADERBOARD: Omit<LeaderboardEntry, 'isCurrentUser'>[] = [
-  { id: 'l1', username: 'أمين الغامض', avatar: '🧙‍♂️', xp: 2450, level: 5 },
-  { id: 'l2', username: 'فاطمة الفاسية', avatar: '👩‍⚕️', xp: 1950, level: 4 },
-  { id: 'l3', username: 'سيمو البهجاوي', avatar: '🎯', xp: 1550, level: 4 },
-  { id: 'l4', username: 'عائشة القنديشة', avatar: '🧕', xp: 1200, level: 3 },
-  { id: 'l5', username: 'ياسين الرباطي', avatar: '🏃‍♂️', xp: 950, level: 2 },
-  { id: 'l6', username: 'سلمى الأطلسية', avatar: '🎨', xp: 750, level: 2 },
-  { id: 'l7', username: 'عمر التانجي', avatar: '🗺️', xp: 450, level: 1 }
-];
+const DEFAULT_LEADERBOARD: Omit<LeaderboardEntry, 'isCurrentUser'>[] = [];
 
 export const useQuizStore = create<QuizState>((set, get) => ({
   user: null,
@@ -148,11 +140,35 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         });
       });
 
-      if (list.length > 0) {
-        set({ leaderboard: list });
+      // Ensure the current user is showing in the list if the user has registered
+      const hasCurrentUser = list.some(item => item.isCurrentUser || item.id === currentUserId);
+      if (!hasCurrentUser) {
+        const currentUser = get().user;
+        if (currentUser && currentUserId) {
+          list.push({
+            id: currentUserId,
+            username: currentUser.username,
+            avatar: currentUser.avatar,
+            xp: currentUser.totalXP,
+            level: currentUser.level,
+            isCurrentUser: true
+          });
+        }
       }
+
+      // Sort full list by XP descending
+      list.sort((a, b) => b.xp - a.xp);
+
+      set({ leaderboard: list });
     } catch (e) {
       console.warn("Could not load real leaderboard, falling back to local list:", e);
+      // Fallback to only displaying current user
+      const currentUser = get().user;
+      if (currentUser) {
+        set({ leaderboard: get().buildLeaderboard(currentUser) });
+      } else {
+        set({ leaderboard: [] });
+      }
     }
   },
 
