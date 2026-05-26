@@ -109,12 +109,19 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       leaderboard: fullLeaderboard
     });
 
-    // Make sure we have a registered user ID assigned if the user exists but has no ID
+    // Make sure we have a registered user ID assigned if the user exists but has no ID, and always sync their latest data to Firestore
     let userId = localStorage.getItem('s_g_userid');
-    if (user && !userId) {
-      userId = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
-      localStorage.setItem('s_g_userid', userId);
-      setDoc(doc(db, 'users', userId), user).catch(err => console.warn(err));
+    if (user) {
+      if (!userId) {
+        userId = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+        localStorage.setItem('s_g_userid', userId);
+      }
+      setDoc(doc(db, 'users', userId), user, { merge: true })
+        .then(() => {
+          // Re-fetch the leaderboard after we know our user is synced
+          get().fetchRealLeaderboard();
+        })
+        .catch(err => console.warn("Firestore sync on init failing:", err));
     }
 
     // Fetch the real users list async from Firestore
