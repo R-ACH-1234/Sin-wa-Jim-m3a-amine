@@ -73,7 +73,7 @@ export default function MoroccanLayout({
   const isQuizPage = currentPath.startsWith('/quiz');
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-between font-sans select-none overflow-x-hidden relative transition-colors duration-500 ${
+    <div className={`h-screen h-[100dvh] flex flex-col items-center justify-between font-sans select-none overflow-hidden relative transition-colors duration-500 ${
       theme === 'dark' 
         ? (isQuizPage ? 'bg-[#0d2d23] text-slate-100' : 'bg-[#030c0a] text-slate-100') 
         : 'bg-[#fcfaf5] text-emerald-950'
@@ -205,14 +205,34 @@ export default function MoroccanLayout({
           )}
         </div>
 
-        {/* Center application titles */}
-        <div className="text-center absolute left-1/2 -translate-x-1/2 pointer-events-none flex items-center justify-center space-x-1 sm:space-x-2 space-x-reverse">
-          <AppLogo size="sm" className="w-6 h-6 sm:w-8 sm:h-8 drop-shadow-sm shrink-0 max-[410px]:hidden" />
-          <h1 className={`font-black text-[10px] sm:text-xs tracking-wide transition-colors duration-300 ${
-            theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'
-          }`}>
-            {title || "سين وجيم"}
-          </h1>
+        {/* Center application titles or interactive brand Logo */}
+        <div className="text-center absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+          {(!title || title === "سين وجيم مع أمين" || title === "سين وجيم" || currentPath === "/") ? (
+            <div 
+              onClick={() => {
+                if (soundEnabled) soundEffects.playClick();
+                navigate('/');
+              }}
+              className="pointer-events-auto cursor-pointer flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
+              title="الرئيسية"
+            >
+              <AppLogo size="sm" className="w-9 h-9 sm:w-10 sm:h-10 drop-shadow-md rounded-xl" />
+              <span className={`font-black text-[11px] sm:text-xs mr-1.5 tracking-wide transition-colors ${
+                theme === 'dark' ? 'text-amber-400' : 'text-emerald-950 font-extrabold'
+              }`}>
+                س وج
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center space-x-1 sm:space-x-1.5 space-x-reverse pointer-events-none">
+              <AppLogo size="sm" className="w-6 h-6 sm:w-7 sm:h-7 drop-shadow-sm shrink-0 max-[410px]:hidden" />
+              <h1 className={`font-black text-[10px] sm:text-xs tracking-wide transition-colors duration-300 ${
+                theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'
+              }`}>
+                {title}
+              </h1>
+            </div>
+          )}
         </div>
 
         {/* HUD Toolbar controls */}

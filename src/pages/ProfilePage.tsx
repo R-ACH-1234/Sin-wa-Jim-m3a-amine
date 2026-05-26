@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuizStore } from '../store/useQuizStore';
 import { soundEffects } from '../utils/audio';
 import { 
@@ -14,7 +14,7 @@ import {
   Trophy,
   Crown
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const achievementIconMap: Record<string, any> = {
   Trophy: Trophy,
@@ -24,8 +24,33 @@ const achievementIconMap: Record<string, any> = {
   Award: Award
 };
 
+const AVATAR_OPTIONS = [
+  { emoji: '👳‍♂️', name: 'مول الشاش' },
+  { emoji: '🧕', name: 'للا فاطومة' },
+  { emoji: '🦁', name: 'سبع الأطلس' },
+  { emoji: '🐪', name: 'جمل الصحراء' },
+  { emoji: '🧑‍🍳', name: 'الشاف المغربي' },
+  { emoji: '🏃‍♂️', name: 'البطل السريع' },
+  { emoji: '🎨', name: 'الفنان المبدع' },
+  { emoji: '👸', name: 'أميرة مغربية' },
+  { emoji: '🦅', name: 'صقر الأطلس' },
+  { emoji: '🎓', name: 'العَالم الذكي' }
+];
+
 export default function ProfilePage() {
-  const { user, theme, achievements, questions } = useQuizStore();
+  const { user, theme, achievements, questions, updateUser, soundEnabled } = useQuizStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editUsername, setEditUsername] = useState(user?.username || '');
+  const [editAvatar, setEditAvatar] = useState(user?.avatar || '👳‍♂️');
+  const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  React.useEffect(() => {
+    if (user) {
+      setEditUsername(user.username);
+      setEditAvatar(user.avatar);
+    }
+  }, [user]);
 
   const userAchievements = user?.achievements || [];
   const answeredCount = user?.completedQuestions.length || 0;
@@ -40,7 +65,7 @@ export default function ProfilePage() {
       <div className={`w-full rounded-2xl p-5 border text-center relative overflow-hidden shadow-lg ${
         theme === 'dark' 
           ? 'bg-gradient-to-tr from-slate-950 via-[#011425] to-slate-950 border-amber-500/10 shadow-black/80' 
-          : 'bg-white border-slate-200'
+          : 'bg-white border-slate-200 shadow-slate-200'
       }`}>
         <div className="absolute top-0 right-0 p-3 opacity-[0.05] text-9xl">🦁</div>
         
@@ -55,7 +80,20 @@ export default function ProfilePage() {
         </div>
 
         <h2 className="text-lg font-black">{user?.username}</h2>
-        <p className="text-[10px] opacity-75 mt-0.5">مسجل منذ {new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        
+        {/* Edit profile button */}
+        <button
+          onClick={() => {
+            if (soundEnabled) soundEffects.playClick();
+            setIsEditing(true);
+          }}
+          className="mt-2.5 inline-flex items-center space-x-1.5 space-x-reverse bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 dark:text-amber-400 font-bold px-3 py-1.5 rounded-lg border border-amber-500/20 active:scale-95 transition-all text-xs cursor-pointer"
+        >
+          <span>تعديل الاسم والصورة</span>
+          <span>✎</span>
+        </button>
+
+        <p className="text-[10px] opacity-75 mt-3">مسجل كبطل في اللعبة الثقافية</p>
 
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-2.5 mt-5 pt-4 border-t border-dashed border-slate-500/20">
@@ -133,6 +171,124 @@ export default function ProfilePage() {
           })}
         </div>
       </div>
+
+      {/* EDIT PROFILE MODAL */}
+      <AnimatePresence>
+        {isEditing && (
+          <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className={`w-full max-w-sm rounded-2xl p-6 shadow-2xl border text-center transition-all ${
+                theme === 'dark' 
+                  ? 'bg-slate-900/95 border-amber-500/15 text-slate-100' 
+                  : 'bg-white border-slate-200 text-slate-900 shadow-xl'
+              }`}
+            >
+              <h2 className={`text-base font-black mb-1 ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'}`}>
+                تعديل الملف الشخصي
+              </h2>
+              <p className="text-[10px] opacity-75 mb-4 leading-relaxed text-center">
+                قم بتغيير اسم الشهرة الخاص بك واختيار صورتك الرمزية المفضلة للتنافس في الصدارة.
+              </p>
+
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!editUsername.trim()) {
+                  setErrorMsg('الاسم لا يمكن أن يكون فارغاً!');
+                  return;
+                }
+                setSaving(true);
+                updateUser({ username: editUsername.trim(), avatar: editAvatar });
+                if (soundEnabled) soundEffects.playFanfare();
+                setIsEditing(false);
+                setSaving(false);
+              }} className="space-y-4 text-right">
+                
+                {/* Avatar Slider */}
+                <div>
+                  <label className="block text-xs font-bold mb-2 opacity-80 text-right">اختر صورتك الرمزية الجديدة:</label>
+                  <div className="flex gap-2 overflow-x-auto py-1.5 px-0.5 scrollbar-thin">
+                    {AVATAR_OPTIONS.map((item, idx) => {
+                      const isSelected = editAvatar === item.emoji;
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            if (soundEnabled) soundEffects.playClick();
+                            setEditAvatar(item.emoji);
+                          }}
+                          className={`flex-shrink-0 flex flex-col items-center justify-center p-2.5 rounded-xl border transition-all cursor-pointer ${
+                            isSelected 
+                              ? 'border-amber-400 bg-amber-500/10 scale-105' 
+                              : 'border-transparent bg-slate-500/5 hover:bg-slate-500/10'
+                          }`}
+                        >
+                          <span className="text-2xl mb-1">{item.emoji}</span>
+                          <span className="text-[9px] font-bold opacity-80 whitespace-nowrap">{item.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Username input */}
+                <div className="text-right">
+                  <label className="block text-xs font-bold mb-1.5 opacity-80">اسم الشهرة أو اللقب الأول:</label>
+                  <input 
+                    type="text"
+                    required
+                    maxLength={15}
+                    placeholder="مثال: بطل فاس"
+                    value={editUsername}
+                    onChange={(e) => {
+                      setEditUsername(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    className={`w-full px-4 py-2.5 rounded-xl text-center font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 select-text text-base ${
+                      theme === 'dark'
+                        ? 'bg-slate-950 border border-amber-500/20 text-amber-300'
+                        : 'bg-slate-100 border border-slate-200 text-emerald-950'
+                    }`}
+                  />
+                </div>
+
+                {errorMsg && (
+                  <p className="text-xs text-rose-500 text-center font-bold">{errorMsg}</p>
+                )}
+
+                <div className="flex space-x-2 space-x-reverse pt-2">
+                  <button
+                    type="submit"
+                    disabled={saving || !editUsername.trim()}
+                    className="flex-1 py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black rounded-xl shadow-md active:scale-95 transition-all text-xs cursor-pointer"
+                  >
+                    حفظ التغييرات
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (soundEnabled) soundEffects.playClick();
+                      setIsEditing(false);
+                      setEditUsername(user?.username || '');
+                      setEditAvatar(user?.avatar || '👳‍♂️');
+                    }}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all focus:outline-none cursor-pointer ${
+                      theme === 'dark' 
+                        ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                    }`}
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
