@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuizStore } from '../store/useQuizStore';
 import { soundEffects } from '../utils/audio';
+import logoPng from '../logo.png';
+import logoJpg from '../logo.jpg';
 import { 
   Volume2, 
   VolumeX, 
@@ -107,10 +109,10 @@ export default function MoroccanLayout({
           <motion.img 
             animate={isQuizPage ? { rotate: 0 } : { rotate: 360 }}
             transition={isQuizPage ? { duration: 0.8, ease: "easeOut" } : { repeat: Infinity, duration: 80, ease: "linear" }}
-            src="/logo.png"
+            src={logoPng}
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = '/logo.jpg';
+              e.currentTarget.src = logoJpg;
             }}
             alt="Logo background watermark"
             className="w-full h-full object-contain filter select-none rounded-[32px]"

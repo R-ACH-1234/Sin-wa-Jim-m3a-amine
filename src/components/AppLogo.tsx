@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import logoPng from '../logo.png';
+import logoJpg from '../logo.jpg';
 
 interface AppLogoProps {
   className?: string;
@@ -6,7 +8,7 @@ interface AppLogoProps {
 }
 
 export default function AppLogo({ className = '', size = 'md' }: AppLogoProps) {
-  const [logoSrc, setLogoSrc] = useState('/logo.png');
+  const [logoSrc, setLogoSrc] = useState(logoPng);
   const [hasError, setHasError] = useState(false);
 
   // Determine width and height classes based on sizing
@@ -20,8 +22,8 @@ export default function AppLogo({ className = '', size = 'md' }: AppLogoProps) {
   const selectedSize = sizeClasses[size];
 
   const handleImageError = () => {
-    if (logoSrc === '/logo.png') {
-      setLogoSrc('/logo.jpg');
+    if (logoSrc === logoPng) {
+      setLogoSrc(logoJpg);
     } else {
       setHasError(true);
     }
