@@ -24,6 +24,7 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
   const [username, setUsername] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_OPTIONS[0].emoji);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
 
   // Initializing loop
@@ -50,13 +51,20 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
     return () => clearInterval(interval);
   }, [isInitializing, user, onComplete]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim()) return;
+    if (!username.trim() || submitting) return;
     
-    if (soundEnabled) soundEffects.playFanfare();
-    registerUser(username, selectedAvatar);
-    onComplete();
+    setSubmitting(true);
+    try {
+      if (soundEnabled) soundEffects.playFanfare();
+      await registerUser(username, selectedAvatar);
+    } catch (err) {
+      console.warn("Error registering user:", err);
+    } finally {
+      setSubmitting(false);
+      onComplete();
+    }
   };
 
   if (isInitializing) {
@@ -191,11 +199,23 @@ export default function SplashPage({ onComplete }: SplashPageProps) {
 
           <button
             type="submit"
-            disabled={!username.trim()}
+            disabled={!username.trim() || submitting}
             className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold rounded-2xl shadow-xl active:scale-95 transition-all text-sm flex items-center justify-center space-x-2 space-x-reverse disabled:opacity-50 cursor-pointer"
           >
-            <span>انطلق الآن للمنافسة!</span>
-            <span>🚀</span>
+            {submitting ? (
+              <span className="flex items-center gap-2 justify-center">
+                <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                جاري التسجيل والربط...
+              </span>
+            ) : (
+              <>
+                <span>انطلق الآن للمنافسة!</span>
+                <span>🚀</span>
+              </>
+            )}
           </button>
         </form>
       </motion.div>

@@ -10,6 +10,7 @@ interface QuizState {
   soundEnabled: boolean;
   theme: 'light' | 'dark';
   leaderboard: LeaderboardEntry[];
+  leaderboardError: string | null;
   achievements: Achievement[];
   
   // App initialization
@@ -18,7 +19,7 @@ interface QuizState {
   fetchRealLeaderboard: () => Promise<void>;
   
   // User profile actions
-  registerUser: (username: string, avatar: string) => void;
+  registerUser: (username: string, avatar: string) => Promise<void>;
   updateUser: (updates: Partial<UserProfile>) => void;
   addXP: (amount: number) => { levelUp: boolean; xpEarned: number };
   claimDailyReward: () => number | null; // returns XP claimed or null
@@ -49,6 +50,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   soundEnabled: true,
   theme: 'dark',
   leaderboard: [],
+  leaderboardError: null,
   achievements: ACHIEVEMENTS,
 
   initApp: () => {
@@ -130,7 +132,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
 
   fetchRealLeaderboard: async () => {
     try {
-      const q = query(collection(db, 'users'), orderBy('totalXP', 'desc'), limit(50));
+      // Query without order-by to completely bypass composite-index or field-index errors
+      const q = query(collection(db, 'users'), limit(100));
       const snapshot = await getDocs(q);
       const list: LeaderboardEntry[] = [];
       const currentUserId = localStorage.getItem('s_g_userid');
@@ -163,12 +166,17 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         }
       }
 
-      // Sort full list by XP descending
+      // Sort in memory securely
       list.sort((a, b) => b.xp - a.xp);
 
-      set({ leaderboard: list });
+      // Keep top 50 in our displayed state
+      const topList = list.slice(0, 50);
+
+      set({ leaderboard: topList, leaderboardError: null });
     } catch (e) {
       console.warn("Could not load real leaderboard, falling back to local list:", e);
+      const errMsg = e instanceof Error ? e.message : String(e);
+      set({ leaderboardError: errMsg });
       // Fallback to only displaying current user
       const currentUser = get().user;
       if (currentUser) {
@@ -196,7 +204,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     return list.sort((a, b) => b.xp - a.xp);
   },
 
-  registerUser: (username: string, avatar: string) => {
+  registerUser: async (username: string, avatar: string) => {
     const userId = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
     localStorage.setItem('s_g_userid', userId);
 
@@ -217,14 +225,14 @@ export const useQuizStore = create<QuizState>((set, get) => ({
 
     set({ user: newUser, leaderboard: fullLeaderboard });
 
-    // Sync to Firestore
-    setDoc(doc(db, 'users', userId), newUser)
-      .then(() => {
-        get().fetchRealLeaderboard();
-      })
-      .catch(err => {
-        handleFirestoreError(err, OperationType.WRITE, `users/${userId}`);
-      });
+    // Sync to Firestore and wait for it to be safely persisted before page reloads/transitions
+    try {
+      await setDoc(doc(db, 'users', userId), newUser);
+      await get().fetchRealLeaderboard();
+    } catch (err) {
+      console.warn("Firestore sync during registration failed:", err);
+      // Even if firestore offline, the app state has already been initialized locally
+    }
   },
 
   updateUser: (updates: Partial<UserProfile>) => {

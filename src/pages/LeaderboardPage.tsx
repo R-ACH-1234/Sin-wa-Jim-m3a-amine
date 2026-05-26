@@ -4,7 +4,7 @@ import { soundEffects } from '../utils/audio';
 import { Trophy, Award, Sparkles, User, Medal, RefreshCw } from 'lucide-react';
 
 export default function LeaderboardPage() {
-  const { leaderboard, theme, user, fetchRealLeaderboard, soundEnabled } = useQuizStore();
+  const { leaderboard, leaderboardError, theme, user, fetchRealLeaderboard, soundEnabled } = useQuizStore();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -43,6 +43,14 @@ export default function LeaderboardPage() {
           <p className="text-xs opacity-75 mt-0.5">ترتيب عباقرة وأذكياء التطبيق بنقاط الـ XP. هل يمكنك اللحاق بالصدارة؟</p>
         </div>
       </div>
+
+      {leaderboardError && (
+        <div className="p-3.5 rounded-xl border bg-red-500/10 border-red-500/30 text-right text-red-400 text-xs">
+          ⚠️ <strong>عذراً، حدث خطأ في مزامنة قاعدة البيانات:</strong>
+          <p className="mt-1 font-mono text-[10px] opacity-80 select-all">{leaderboardError}</p>
+          <p className="mt-1 opacity-70">سيتم عرض بياناتك المحلية لضمان استمرار اللعب دون توقف.</p>
+        </div>
+      )}
 
       {/* 2. PODIUM HUD */}
       <div className="grid grid-cols-3 gap-2.5 pt-2">

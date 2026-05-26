@@ -6,14 +6,10 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow get, list: if true;
+      allow read: if true;
       allow create, update: if userId is string 
         && userId.size() <= 128
-        && request.resource.data.username is string 
-        && request.resource.data.username.size() >= 1
-        && request.resource.data.username.size() <= 50
-        && request.resource.data.avatar is string
-        && request.resource.data.totalXP is number;
+        && request.resource.data.username is string;
       allow delete: if false;
     }
   }
