@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface AppLogoProps {
   className?: string;
@@ -6,6 +6,8 @@ interface AppLogoProps {
 }
 
 export default function AppLogo({ className = '', size = 'md' }: AppLogoProps) {
+  const [imageError, setImageError] = useState(false);
+
   // Determine width and height classes based on sizing
   const sizeClasses = {
     sm: 'w-10 h-10',
@@ -21,13 +23,23 @@ export default function AppLogo({ className = '', size = 'md' }: AppLogoProps) {
       id="app-custom-logo-container" 
       className={`inline-block select-none relative filter drop-shadow-[0_8px_20px_rgba(4,120,87,0.15)] ${selectedSize} ${className}`}
     >
-      <img 
-        src="/logo.png" 
-        alt="لوغو سين وجيم"
-        id="custom-logo-image"
-        className="w-full h-full object-contain rounded-2xl"
-        referrerPolicy="no-referrer"
-      />
+      {!imageError ? (
+        <img 
+          src="/logo.png" 
+          alt="لوغو سين وجيم"
+          id="custom-logo-image"
+          className="w-full h-full object-contain rounded-2xl"
+          onError={() => setImageError(true)}
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        // Minimal elegant text capsule fallback
+        <div className="w-full h-full rounded-2xl bg-gradient-to-br from-emerald-800 to-emerald-950 border-2 border-amber-500 flex items-center justify-center shadow-lg text-center p-2">
+          <span className="font-display font-black text-amber-500 text-lg md:text-xl transform leading-none">
+            س وج
+          </span>
+        </div>
+      )}
     </div>
   );
 }
