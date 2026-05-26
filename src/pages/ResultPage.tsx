@@ -14,7 +14,10 @@ import {
   Flame, 
   Award,
   BookOpen,
-  ArrowLeft
+  ArrowLeft,
+  Share2,
+  Copy,
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -33,10 +36,57 @@ export default function ResultPage() {
   const { user, theme, soundEnabled, unlockNextStage, addXP, checkAchievements, questions } = useQuizStore();
   const [newAchievements, setNewAchievements] = useState<string[]>([]);
   const [xpReport, setXpReport] = useState({ gained: 0, total: 0, levelUp: false });
+  const [copied, setCopied] = useState(false);
+  const [canNativeShare, setCanNativeShare] = useState(false);
+
+  useEffect(() => {
+    if (navigator.share) {
+      setCanNativeShare(true);
+    }
+  }, []);
 
   const categoryDetails = CATEGORIES.find(c => c.id === categoryId);
   const passed = correctCount >= 2; // Needs at least 2 correct out of 3
   const hasNextStage = questions.some(q => q.category === categoryId && q.stage === stageNum + 1);
+
+  // Perfect: 100 XP, Pass (2/3): 60 XP, Fail (0 or 1/3): 15 XP
+  let calculatedXP = 15;
+  if (correctCount === 3) {
+    calculatedXP = 100;
+  } else if (correctCount === 2) {
+    calculatedXP = 60;
+  }
+
+  const shareText = `🏆 لقد حققت إنجازاً متميزاً في كويز المعرفة المغربية وبطولات شواهد الوطن! 🇲🇦✨
+
+📚 القسم: ${categoryDetails?.name || 'عامة'}
+🕹️ المرحلة: ${stageNum}
+🎯 النتيجة: ${correctCount}/${totalCount} إجابات صحيحة
+📈 نقاط الخبرة المكتسبة: +${calculatedXP} XP
+👑 مستواي الحالي: ${user?.level || 1}
+
+💡 هل يمكنك تحدي مستواي والإجابة عن الأسئلة الصعبة؟ جرب اللعبة الآن!
+🔗 ${window.location.origin}`;
+
+  const handleCopy = () => {
+    if (soundEnabled) soundEffects.playClick();
+    navigator.clipboard.writeText(shareText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleNativeShare = async () => {
+    if (soundEnabled) soundEffects.playClick();
+    try {
+      await navigator.share({
+        title: 'كويز المعرفة المغربية',
+        text: shareText,
+        url: window.location.origin
+      });
+    } catch (e) {
+      console.warn("Native share cancelled or failed:", e);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -193,6 +243,116 @@ export default function ResultPage() {
           </div>
         </div>
       )}
+
+      {/* Dynamic Share Achievement Card */}
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className={`w-full rounded-2xl p-5 border text-right relative overflow-hidden transition-all duration-300 ${
+          theme === 'dark' 
+            ? 'bg-slate-950/50 border-slate-500/10 shadow-black/30' 
+            : 'bg-white border-emerald-800/10 shadow-emerald-950/5'
+        }`}
+      >
+        <div className="flex items-center justify-between mb-3 border-b pb-2.5 border-dashed border-slate-500/10">
+          <div className="flex items-center space-x-2 space-x-reverse">
+            <span className="text-xl">📢</span>
+            <h3 className={`text-xs font-black ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-950'}`}>
+              شارك إنجازك الثقافي مع أصدقائك
+            </h3>
+          </div>
+          <span className="text-[10px] font-mono text-slate-400 bg-slate-500/10 px-2 py-0.5 rounded-full">
+            تحدَّ الجميع!
+          </span>
+        </div>
+
+        <p className="text-[11px] opacity-80 mb-3.5 leading-relaxed">
+          انشر نتيجتك المشرّفة وأخبر رفقاءك بمستواك وعلمك الثقافي في سيرة وتاريخ المغرب الحبيب ومختلف العلوم!
+        </p>
+
+        {/* Text Preview Box */}
+        <div className={`p-3 rounded-xl border text-[11px] text-right font-semibold leading-relaxed mb-4 max-h-24 overflow-y-auto select-all cursor-text whitespace-pre-wrap ${
+          theme === 'dark' ? 'bg-slate-900/60 border-slate-500/10 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+        }`}>
+          {shareText}
+        </div>
+
+        {/* Buttons Flex list */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          
+          {/* Clipboard Copy Button */}
+          <button
+            onClick={handleCopy}
+            className={`flex-1 min-w-[110px] p-2.5 rounded-xl border font-bold flex items-center justify-center space-x-1.5 space-x-reverse text-[11px] transition-all cursor-pointer ${
+              copied 
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                : theme === 'dark' 
+                  ? 'bg-slate-900 border-slate-500/10 hover:bg-slate-800 text-slate-300' 
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200'
+            }`}
+          >
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+            <span>{copied ? 'تم النسخ!' : 'نسخ النص'}</span>
+          </button>
+
+          {/* Web Share (Mobile Native) - only visible if supported */}
+          {canNativeShare && (
+            <button
+              onClick={handleNativeShare}
+              className={`flex-1 min-w-[110px] p-2.5 rounded-xl border font-bold flex items-center justify-center space-x-1.5 space-x-reverse text-[11px] transition-all cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/15 text-amber-300' 
+                  : 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-100'
+              }`}
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>مشاركة سريعة</span>
+            </button>
+          )}
+
+          {/* WhatsApp share */}
+          <a
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => soundEnabled && soundEffects.playClick()}
+            className="flex-1 min-w-[110px] p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center space-x-1.5 space-x-reverse text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all text-center"
+          >
+            <span className="text-sm">💬</span>
+            <span>واتساب</span>
+          </a>
+
+          {/* Twitter / X share */}
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => soundEnabled && soundEffects.playClick()}
+            className={`flex-1 min-w-[110px] p-2.5 font-bold rounded-xl flex items-center justify-center space-x-1.5 space-x-reverse text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all text-center ${
+              theme === 'dark'
+                ? 'bg-slate-900 text-white border border-slate-800 hover:bg-slate-800'
+                : 'bg-slate-950 text-white hover:bg-slate-900'
+            }`}
+          >
+            <span className="font-sans font-bold">𝕏</span>
+            <span>إكس / تويتر</span>
+          </a>
+
+          {/* Facebook share */}
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => soundEnabled && soundEffects.playClick()}
+            className="flex-1 min-w-[110px] p-2.5 bg-blue-700 hover:bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center space-x-1.5 space-x-reverse text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all text-center"
+          >
+            <span className="text-sm">👥</span>
+            <span>فيسبوك</span>
+          </a>
+
+        </div>
+      </motion.div>
 
       {/* 4. ACTIONS REDIRECT HUB */}
       <div className="grid grid-cols-2 gap-3 pt-2">

@@ -123,7 +123,10 @@ export const useQuizStore = create<QuizState>((set, get) => ({
           // Re-fetch the leaderboard after we know our user is synced
           get().fetchRealLeaderboard();
         })
-        .catch(err => console.warn("Firestore sync on init failing:", err));
+        .catch(err => {
+          console.warn("Firestore sync on init failing:", err);
+          handleFirestoreError(err, OperationType.WRITE, `users/${userId}`);
+        });
     }
 
     // Fetch the real users list async from Firestore
@@ -134,7 +137,13 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     try {
       // Query without order-by to completely bypass composite-index or field-index errors
       const q = query(collection(db, 'users'), limit(100));
-      const snapshot = await getDocs(q);
+      let snapshot;
+      try {
+        snapshot = await getDocs(q);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.LIST, 'users');
+        return; // Halt if error is thrown
+      }
       const list: LeaderboardEntry[] = [];
       const currentUserId = localStorage.getItem('s_g_userid');
       
@@ -227,7 +236,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
 
     // Sync to Firestore and wait for it to be safely persisted before page reloads/transitions
     try {
-      await setDoc(doc(db, 'users', userId), newUser);
+      try {
+        await setDoc(doc(db, 'users', userId), newUser);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.CREATE, `users/${userId}`);
+      }
       await get().fetchRealLeaderboard();
     } catch (err) {
       console.warn("Firestore sync during registration failed:", err);
@@ -253,6 +266,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         })
         .catch(err => {
           console.warn("Cloud sync error in updateUser:", err);
+          handleFirestoreError(err, OperationType.UPDATE, `users/${userId}`);
         });
     }
   },
@@ -288,6 +302,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         })
         .catch(err => {
           console.warn("Cloud sync error in addXP:", err);
+          handleFirestoreError(err, OperationType.UPDATE, `users/${userId}`);
         });
     }
 
