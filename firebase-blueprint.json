@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "The profile of a real player, tracking their XP, level, unlocked stages, and achievements.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "The chosen non-anonymous display nickname"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Selected avatar emoji"
+        },
+        "totalXP": {
+          "type": "integer",
+          "description": "Total experience points accumulated"
+        },
+        "level": {
+          "type": "integer",
+          "description": "The current computed level of the player"
+        },
+        "streakDays": {
+          "type": "integer",
+          "description": "The continuous daily active count"
+        },
+        "lastActiveDate": {
+          "type": "string",
+          "format": "date",
+          "description": "YYYY-MM-DD format of the last active day"
+        },
+        "unlockedStages": {
+          "type": "object",
+          "description": "Map of category IDs to the highest unlocked stage"
+        },
+        "completedQuestions": {
+          "type": "array",
+          "description": "List of question IDs completed by the user"
+        },
+        "achievements": {
+          "type": "array",
+          "description": "List of unlocked achievements IDs"
+        }
+      },
+      "required": ["username", "avatar", "totalXP", "level"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Global user profiles for the real-time leaderboard."
+    }
+  }
+}

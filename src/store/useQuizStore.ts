@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { UserProfile, Question, LeaderboardEntry, Achievement } from '../types';
 import { INITIAL_QUESTIONS, ACHIEVEMENTS } from '../data/initialQuestions';
+import { collection, doc, setDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType } from '../utils/firebase';
 
 interface QuizState {
   user: UserProfile | null;
@@ -13,6 +15,7 @@ interface QuizState {
   // App initialization
   initApp: () => void;
   buildLeaderboard: (currentUser: UserProfile | null) => LeaderboardEntry[];
+  fetchRealLeaderboard: () => Promise<void>;
   
   // User profile actions
   registerUser: (username: string, avatar: string) => void;
@@ -113,13 +116,52 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       theme,
       leaderboard: fullLeaderboard
     });
+
+    // Make sure we have a registered user ID assigned if the user exists but has no ID
+    let userId = localStorage.getItem('s_g_userid');
+    if (user && !userId) {
+      userId = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+      localStorage.setItem('s_g_userid', userId);
+      setDoc(doc(db, 'users', userId), user).catch(err => console.warn(err));
+    }
+
+    // Fetch the real users list async from Firestore
+    get().fetchRealLeaderboard();
+  },
+
+  fetchRealLeaderboard: async () => {
+    try {
+      const q = query(collection(db, 'users'), orderBy('totalXP', 'desc'), limit(50));
+      const snapshot = await getDocs(q);
+      const list: LeaderboardEntry[] = [];
+      const currentUserId = localStorage.getItem('s_g_userid');
+      
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        list.push({
+          id: doc.id,
+          username: data.username || 'بطل',
+          avatar: data.avatar || '🧑‍💻',
+          xp: data.totalXP ?? 0,
+          level: data.level ?? 1,
+          isCurrentUser: doc.id === currentUserId
+        });
+      });
+
+      if (list.length > 0) {
+        set({ leaderboard: list });
+      }
+    } catch (e) {
+      console.warn("Could not load real leaderboard, falling back to local list:", e);
+    }
   },
 
   buildLeaderboard: (currentUser: UserProfile | null): LeaderboardEntry[] => {
     const list = [...DEFAULT_LEADERBOARD] as LeaderboardEntry[];
     if (currentUser) {
+      const currentUserId = localStorage.getItem('s_g_userid') || 'user_current';
       list.push({
-        id: 'user_current',
+        id: currentUserId,
         username: currentUser.username,
         avatar: currentUser.avatar,
         xp: currentUser.totalXP,
@@ -132,6 +174,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
 
   registerUser: (username: string, avatar: string) => {
+    const userId = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+    localStorage.setItem('s_g_userid', userId);
+
     const newUser: UserProfile = {
       username: username.trim() || 'بطل مجهول',
       avatar: avatar || '🧑‍💻',
@@ -148,6 +193,15 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const fullLeaderboard = get().buildLeaderboard(newUser);
 
     set({ user: newUser, leaderboard: fullLeaderboard });
+
+    // Sync to Firestore
+    setDoc(doc(db, 'users', userId), newUser)
+      .then(() => {
+        get().fetchRealLeaderboard();
+      })
+      .catch(err => {
+        handleFirestoreError(err, OperationType.WRITE, `users/${userId}`);
+      });
   },
 
   updateUser: (updates: Partial<UserProfile>) => {
@@ -159,6 +213,17 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const fullLeaderboard = get().buildLeaderboard(updated);
 
     set({ user: updated, leaderboard: fullLeaderboard });
+
+    const userId = localStorage.getItem('s_g_userid');
+    if (userId) {
+      setDoc(doc(db, 'users', userId), updated, { merge: true })
+        .then(() => {
+          get().fetchRealLeaderboard();
+        })
+        .catch(err => {
+          console.warn("Cloud sync error in updateUser:", err);
+        });
+    }
   },
 
   addXP: (amount: number) => {
@@ -183,6 +248,17 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const fullLeaderboard = get().buildLeaderboard(updated);
 
     set({ user: updated, leaderboard: fullLeaderboard });
+
+    const userId = localStorage.getItem('s_g_userid');
+    if (userId) {
+      setDoc(doc(db, 'users', userId), updated, { merge: true })
+        .then(() => {
+          get().fetchRealLeaderboard();
+        })
+        .catch(err => {
+          console.warn("Cloud sync error in addXP:", err);
+        });
+    }
 
     return { levelUp, xpEarned: amount };
   },
@@ -401,6 +477,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
 
   resetAllProgress: () => {
     localStorage.removeItem('s_g_user');
+    localStorage.removeItem('s_g_userid');
     set({ user: null, leaderboard: DEFAULT_LEADERBOARD });
   },
 

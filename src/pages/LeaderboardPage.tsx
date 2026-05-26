@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuizStore } from '../store/useQuizStore';
 import { soundEffects } from '../utils/audio';
-import { Trophy, Award, Sparkles, User, Medal } from 'lucide-react';
+import { Trophy, Award, Sparkles, User, Medal, RefreshCw } from 'lucide-react';
 
 export default function LeaderboardPage() {
-  const { leaderboard, theme, user } = useQuizStore();
+  const { leaderboard, theme, user, fetchRealLeaderboard, soundEnabled } = useQuizStore();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchRealLeaderboard().finally(() => setLoading(false));
+  }, []);
+
+  const handleManualRefresh = () => {
+    if (soundEnabled) soundEffects.playClick();
+    setLoading(true);
+    fetchRealLeaderboard().finally(() => setLoading(false));
+  };
 
   const currentUserEntryIndex = leaderboard.findIndex(entry => entry.isCurrentUser);
   const displayRank = currentUserEntryIndex !== -1 ? currentUserEntryIndex + 1 : leaderboard.length;
@@ -13,9 +25,23 @@ export default function LeaderboardPage() {
     <div className="w-full space-y-4 select-none pb-12 text-right">
       
       {/* 1. HUD HEADER */}
-      <div>
-        <h2 className={`text-xl font-black ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-950'}`}>مجلس حكماء سين وجيم</h2>
-        <p className="text-xs opacity-75 mt-0.5">ترتيب عباقرة وأذكياء التطبيق بنقاط الـ XP. هل يمكنك اللحاق بالصدارة؟</p>
+      <div className="flex items-center justify-between">
+        <button 
+          onClick={handleManualRefresh}
+          disabled={loading}
+          className={`p-2 rounded-xl border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            theme === 'dark' 
+              ? 'bg-slate-900 border-slate-700/30 text-amber-400' 
+              : 'bg-white border-slate-200 text-emerald-950 shadow-sm'
+          }`}
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-amber-500' : ''}`} />
+        </button>
+
+        <div>
+          <h2 className={`text-xl font-black ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-950'}`}>مجلس حكماء سين وجيم</h2>
+          <p className="text-xs opacity-75 mt-0.5">ترتيب عباقرة وأذكياء التطبيق بنقاط الـ XP. هل يمكنك اللحاق بالصدارة؟</p>
+        </div>
       </div>
 
       {/* 2. PODIUM HUD */}

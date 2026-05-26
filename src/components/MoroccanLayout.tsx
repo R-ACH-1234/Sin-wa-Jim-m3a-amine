@@ -70,115 +70,60 @@ export default function MoroccanLayout({
   const currentPath = location.pathname;
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-between text-slate-100 font-sans select-none overflow-x-hidden relative ${theme === 'dark' ? 'bg-[#050f1b]' : 'bg-[#f4efe6] text-amber-950'}`}>
+    <div className={`min-h-screen flex flex-col items-center justify-between font-sans select-none overflow-x-hidden relative transition-colors duration-500 ${
+      theme === 'dark' 
+        ? 'bg-[#030c0a] text-slate-100' 
+        : 'bg-[#fcfaf5] text-emerald-950'
+    }`}>
       
-      {/* BACKGROUND SCENERY (Vectored Moroccan Twilight) */}
+      {/* 1. LAYERED BACKGROUND FOR MODERN MOROCCAN ELEGANCE */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         
-        {/* Starry deep twilight sky gradient */}
+        {/* Soft elegant gradient backdrop */}
         <div className={`absolute inset-0 transition-all duration-700 ${
           theme === 'dark' 
-            ? 'bg-gradient-to-b from-[#030d1a] via-[#041a30] to-[#012423]' 
-            : 'bg-gradient-to-b from-[#fcd9aa] via-[#fce6c5] to-[#ece1cc]'
+            ? 'bg-gradient-to-b from-[#020b08] via-[#051411] to-[#0a1820]' 
+            : 'bg-gradient-to-b from-[#fbf9f4] via-[#f7f3ec] to-[#ebdcc8]'
         }`} />
 
-        {/* Traditional Moroccan Mosaic/Zellige overlay */}
-        <div className={`absolute inset-0 opacity-[0.06] ${
-          theme === 'dark' ? 'bg-[radial-gradient(#b45309_1px,transparent_1px)]' : 'bg-[radial-gradient(#064e3b_1px,transparent_1px)]'
-        } [background-size:16px_16px]`} />
+        {/* Delicate premium geometric Zellij lattice watermarked pattern */}
+        <div className={`absolute inset-0 opacity-[0.035] ${
+          theme === 'dark' 
+            ? 'bg-[radial-gradient(#d97706_1px,transparent_1px)]' 
+            : 'bg-[radial-gradient(#047857_1px,transparent_1px)]'
+        } [background-size:20px_20px]`} />
 
-        {/* Shining Crescent Moon & Stars */}
-        <div className="absolute top-12 left-10 md:left-24 transition-transform duration-1000">
-          <svg className={`w-14 h-14 ${theme === 'dark' ? 'text-amber-300 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]' : 'text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]'}`} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12.3 22h-.1c-5.5-.2-10-4.7-10.2-10.3C1.8 6 6.5 1 12.3 1c.5 0 1 .1 1.5.2-3.6 1.7-5.8 5.6-5 9.7.7 3.5 3.5 6.3 7 7 4.1.8 8-1.5 9.7-5 .1.5.2 1 .2 1.5-.2 5.8-5.2 10.8-11.1 11.1z"/>
-          </svg>
-        </div>
+        {/* Ambient top glowing aura */}
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] rounded-full filter blur-[100px] opacity-[0.14] transition-all duration-700 ${
+          theme === 'dark' ? 'bg-amber-400' : 'bg-emerald-500'
+        }`} />
 
-        {/* Scattered sparkly stars in dark mode */}
-        {theme === 'dark' && (
-          <>
-            <motion.div 
-              animate={{ opacity: [0.2, 1, 0.2] }} 
-              transition={{ repeat: Infinity, duration: 3, delay: 0.5 }}
-              className="absolute top-16 right-1/4 text-white"
-            >
-              <Star className="w-2 h-2 fill-white" />
-            </motion.div>
-            <motion.div 
-              animate={{ opacity: [0.1, 0.8, 0.1] }} 
-              transition={{ repeat: Infinity, duration: 4, delay: 1.2 }}
-              className="absolute top-28 right-12 text-white"
-            >
-              <Star className="w-3 h-3 fill-amber-200 text-amber-200" />
-            </motion.div>
-            <motion.div 
-              animate={{ opacity: [0.2, 0.9, 0.2] }} 
-              transition={{ repeat: Infinity, duration: 2.5, delay: 0.2 }}
-              className="absolute top-48 left-1/3 text-white"
-            >
-              <Star className="w-1.5 h-1.5 fill-white" />
-            </motion.div>
-          </>
-        )}
-
-        {/* Traditional Hanging Brass Lantern (Left Side) - Swaying Animation */}
-        <motion.div 
-          animate={{ rotate: [-2, 2, -2] }}
+        {/* Subtle Moroccan Hanging brass lantern representation (Top Right edge) - scaled smaller for no overlap */}
+        <motion.div
+          animate={{ rotate: [-1.5, 1.5, -1.5] }}
           transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
           style={{ transformOrigin: 'top center' }}
-          className="absolute top-0 right-4 md:right-16 z-10 drop-shadow-lg"
+          className="absolute top-0 right-6 md:right-12 z-0 opacity-40 hover:opacity-100 transition-opacity duration-300 pointer-events-none"
         >
-          <svg className={`w-12 h-28 ${theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}`} viewBox="0 0 100 240" fill="currentColor">
-            {/* Hanging chain */}
-            <line x1="50" y1="0" x2="50" y2="80" stroke="currentColor" strokeWidth="3" />
-            {/* Top cap */}
-            <path d="M 30 80 L 70 80 L 60 65 L 40 65 Z" />
-            <circle cx="50" cy="90" r="10" />
-            {/* Lantern body with Islamic latticework */}
-            <path d="M 20 100 L 80 100 L 90 150 L 50 190 L 10 150 Z" className="fill-opacity-90" />
-            <path d="M 35 110 L 65 110 L 75 145 L 50 178 L 25 145 Z" fill={theme === 'dark' ? '#fffbeb' : '#fef3c7'} className={`opacity-80 ${theme === 'dark' ? 'glow-lantern' : ''}`} />
-            <line x1="50" y1="100" x2="50" y2="190" stroke="currentColor" strokeWidth="2" />
-            <line x1="20" y1="130" x2="80" y2="130" stroke="currentColor" strokeWidth="2" />
-            {/* Hanging tassel */}
-            <path d="M 46 190 L 54 190 L 50 220 Z" />
+          <svg className={`w-8 h-20 ${theme === 'dark' ? 'text-amber-500/80' : 'text-emerald-700/60'}`} viewBox="0 0 100 240" fill="currentColor">
+            <line x1="50" y1="0" x2="50" y2="90" stroke="currentColor" strokeWidth="4" />
+            <path d="M 30 90 L 70 90 L 60 75 L 40 75 Z" />
+            <circle cx="50" cy="100" r="12" />
+            <path d="M 20 110 L 80 110 L 90 160 L 50 200 L 10 160 Z" />
+            <circle cx="50" cy="150" r="15" fill={theme === 'dark' ? '#FBBF24' : '#10B981'} className="opacity-80" />
           </svg>
         </motion.div>
-
-        {/* Silhouetted Moroccan Minaret & Palm Trees at bottom */}
-        <div className={`absolute bottom-16 inset-x-0 h-40 opacity-20 pointer-events-none flex items-end justify-between px-6 transition-all duration-1000 ${theme === 'dark' ? 'text-[#011a19]' : 'text-[#dccfb4]'}`}>
-          {/* Minaret outline left */}
-          <div className="flex flex-col items-center">
-            <svg className="w-16 h-40" viewBox="0 0 100 250" fill="currentColor">
-              <rect x="35" y="80" width="30" height="170" />
-              <rect x="30" y="240" width="40" height="10" />
-              <rect x="38" y="55" width="24" height="25" />
-              <polygon points="50,15 35,55 65,55" />
-              <circle cx="50" cy="15" r="4" />
-            </svg>
-          </div>
-          {/* Palm trees outline right */}
-          <div className="flex items-end space-x-2">
-            <svg className="w-12 h-32 scale-x-[-1]" viewBox="0 0 100 200" fill="currentColor">
-              <path d="M45,200 Q40,100 15,40 Q10,70 12,120 M12,120 Q38,110 52,200" />
-              <path d="M50,45 Q75,35 85,15 Q60,25 45,52" />
-              <path d="M50,45 Q90,70 95,115 Q75,80 45,52" />
-              <path d="M40,55 Q5,50 0,25 Q30,35 45,52" />
-              <path d="M40,55 Q5,100 15,135 Q30,100 45,52" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Moroccan Horseshoe Arch styling wrapper for center */}
-        <div className={`absolute inset-[15px] rounded-3xl border-2 pointer-events-none transition-all duration-500 z-0 ${
-          theme === 'dark' ? 'border-[#b45309]/20 shadow-[inset_0_0_50px_rgba(0,0,0,0.6)]' : 'border-[#064e3b]/10 shadow-[inset_0_0_30px_rgba(244,239,230,0.5)]'
-        }`} />
       </div>
 
-      {/* TOP HEADER CONTROLLER HUD & CONTROLS */}
-      <header className={`w-full max-w-lg px-5 pt-5 pb-3 flex items-center justify-between z-10 shrink-0 relative ${theme === 'dark' ? 'border-b border-amber-500/10' : 'border-b border-[#064e3b]/10'}`}>
+      {/* 2. TOP HEADER COHESIVE SYSTEM BAR */}
+      <header className={`w-full max-w-lg px-4.5 pt-5 pb-4.5 flex items-center justify-between z-10 shrink-0 relative ${
+        theme === 'dark' 
+          ? 'border-b border-amber-500/10 bg-[#020b08]/40 backdrop-blur-md' 
+          : 'border-b border-emerald-950/5 bg-white/45 backdrop-blur-md'
+      }`}>
         
-        {/* User Info / Back navigation */}
-        <div className="flex items-center space-x-3 space-x-reverse">
+        {/* User Badge / Navigation Block */}
+        <div className="flex items-center space-x-2 space-x-reverse">
           {showBackButton ? (
             <button 
               onClick={() => {
@@ -186,13 +131,13 @@ export default function MoroccanLayout({
                 if (backTo) navigate(backTo);
                 else navigate(-1);
               }}
-              className={`p-2.5 rounded-xl transition-all duration-300 border backdrop-blur-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer ${
+              className={`p-2.5 rounded-xl transition-all duration-300 border flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer ${
                 theme === 'dark' 
-                  ? 'bg-slate-900/60 border-amber-500/20 text-amber-400 hover:bg-slate-900/90' 
-                  : 'bg-white/70 border-[#064e3b]/20 text-emerald-800 hover:bg-white/90'
+                  ? 'bg-slate-900/80 border-amber-500/15 text-amber-400 hover:bg-slate-900' 
+                  : 'bg-white border-emerald-900/10 text-emerald-800 hover:bg-slate-50'
               }`}
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4.5 h-4.5" />
             </button>
           ) : user ? (
             <div 
@@ -200,87 +145,89 @@ export default function MoroccanLayout({
                 if (soundEnabled) soundEffects.playClick();
                 navigate('/profile');
               }}
-              className={`flex items-center space-x-2 space-x-reverse cursor-pointer p-1.5 pr-2.5 rounded-2xl transition-all border backdrop-blur-md ${
+              className={`flex items-center space-x-2 space-x-reverse cursor-pointer p-1.5 pr-2.5 rounded-xl transition-all border ${
                 theme === 'dark' 
-                  ? 'bg-slate-900/50 border-amber-500/15 hover:bg-slate-900/80 text-amber-100' 
-                  : 'bg-white/50 border-[#064e3b]/15 hover:bg-white/80 text-emerald-950'
+                  ? 'bg-[#101f1b]/60 border-emerald-800/20 hover:bg-[#101f1b]/90 text-amber-200' 
+                  : 'bg-white/80 border-emerald-900/10 hover:bg-white text-emerald-950 shadow-sm'
               }`}
             >
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-lg shadow-sm">
+              <div className="w-7.5 h-7.5 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-base shadow-sm">
                 {user.avatar || '🧑‍💻'}
               </div>
               <div className="text-right">
-                <div className="text-[10px] opacity-70 leading-none">مستوى {user.level}</div>
-                <div className="text-[12px] font-bold tracking-tight leading-normal truncate max-w-[80px]">{user.username}</div>
+                <div className="text-[9px] opacity-70 leading-none">مستوى {user.level}</div>
+                <div className="text-[11px] font-bold leading-normal truncate max-w-[70px]">{user.username}</div>
               </div>
             </div>
           ) : (
-            <div className="font-bold text-amber-500 text-lg flex items-center space-x-1 space-x-reverse">
-              <span className="text-emerald-500">سين</span>
-              <span>وجيم</span>
+            <div className="font-bold text-amber-500 text-sm flex items-center space-x-1 space-x-reverse">
+              <span className="text-emerald-500 font-extrabold">س</span>
+              <span className="text-amber-500 font-extrabold">وج</span>
             </div>
           )}
 
-          {/* Daily streak indicator */}
+          {/* User Streak display */}
           {user && (
-            <div className={`p-2 rounded-xl backdrop-blur-md border flex items-center space-x-0.5 space-x-reverse ${
+            <div className={`p-1.5 px-2.5 rounded-lg border flex items-center space-x-1 space-x-reverse ${
               theme === 'dark' 
-                ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' 
-                : 'bg-amber-100/80 border-amber-500/20 text-amber-700'
+                ? 'bg-orange-600/10 border-orange-500/25 text-orange-400' 
+                : 'bg-amber-100/40 border-amber-500/15 text-amber-700'
             }`}>
-              <Flame className="w-4 h-4 fill-current animate-pulse" />
+              <Flame className="w-3.5 h-3.5 fill-current animate-pulse text-orange-500" />
               <span className="text-xs font-bold leading-none">{user.streakDays || 1}</span>
             </div>
           )}
         </div>
 
-        {/* App Title / Logo Representation */}
-        <div className="text-center absolute left-1/2 -translate-x-1/2 pointer-events-none flex items-center justify-center space-x-1.5 space-x-reverse">
-          <AppLogo size="sm" className="w-8 h-8 drop-shadow-[0_2px_4px_rgba(245,158,11,0.2)] animate-pulse" />
-          <h1 className="font-black text-xs tracking-wide text-amber-500 drop-shadow-md hidden min-[400px]:block">
-            {title || "سين وجيم مع أمين"}
+        {/* Center application titles */}
+        <div className="text-center absolute left-1/2 -translate-x-1/2 pointer-events-none flex items-center justify-center space-x-2 space-x-reverse">
+          <AppLogo size="sm" className="w-6.5 h-6.5 drop-shadow-sm" />
+          <h1 className={`font-black text-xs tracking-wide transition-colors duration-300 ${
+            theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'
+          }`}>
+            {title || "سين وجيم"}
           </h1>
         </div>
 
-        {/* Global Controls */}
-        <div className="flex items-center space-x-2 space-x-reverse">
-          {/* Admin panel launcher */}
+        {/* HUD Toolbar controls */}
+        <div className="flex items-center space-x-1.5 space-x-reverse">
+          {/* Admin panel */}
           <button 
             onClick={() => {
               if (soundEnabled) soundEffects.playClick();
               setShowAdminPrompt(true);
             }}
             title="لوحة التحكم"
-            className={`p-2.5 rounded-xl border backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            className={`p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
               theme === 'dark' 
-                ? 'bg-slate-900/60 border-amber-500/20 text-yellow-400 hover:bg-slate-900/90' 
-                : 'bg-white/70 border-[#064e3b]/20 text-amber-900 hover:bg-white/90'
+                ? 'bg-slate-900/60 border-amber-500/15 text-yellow-400 hover:bg-slate-900' 
+                : 'bg-white border-emerald-950/5 text-amber-900 hover:bg-slate-50 shadow-sm'
             }`}
           >
             <ShieldAlert className="w-4 h-4" />
           </button>
 
-          {/* Theme switcher */}
+          {/* Theme setting toggle */}
           <button 
             onClick={handleThemeToggle}
             title={theme === 'dark' ? 'الوضع المضيء' : 'الوضع المظلم'}
-            className={`p-2.5 rounded-xl border backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            className={`p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
               theme === 'dark' 
-                ? 'bg-slate-900/60 border-amber-500/20 text-amber-300 hover:bg-slate-900/90' 
-                : 'bg-white/70 border-[#064e3b]/20 text-emerald-800 hover:bg-white/90'
+                ? 'bg-slate-900/60 border-amber-500/15 text-amber-300 hover:bg-slate-900' 
+                : 'bg-white border-emerald-950/5 text-emerald-800 hover:bg-slate-50 shadow-sm'
             }`}
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
           </button>
 
-          {/* Sound toggle */}
+          {/* SFX audio toggler */}
           <button 
             onClick={handleSoundToggle}
             title={soundEnabled ? 'كتم الصوت' : 'تفعيل الصوت'}
-            className={`p-2.5 rounded-xl border backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+            className={`p-2 rounded-lg border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
               theme === 'dark' 
-                ? 'bg-slate-900/60 border-amber-500/20 text-amber-300 hover:bg-slate-900/90' 
-                : 'bg-white/70 border-[#064e3b]/20 text-emerald-800 hover:bg-white/90'
+                ? 'bg-slate-900/60 border-amber-500/15 text-amber-300 hover:bg-slate-900' 
+                : 'bg-white border-emerald-950/5 text-emerald-800 hover:bg-slate-50 shadow-sm'
             }`}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -288,17 +235,17 @@ export default function MoroccanLayout({
         </div>
       </header>
 
-      {/* BODY WORKSPACE AREA */}
-      <main className="w-full max-w-md flex-1 px-4 py-3 flex flex-col justify-start overflow-y-auto overflow-x-hidden relative z-10 pb-24">
+      {/* 3. CORE ROUTE CONTAINER - SPACIOUS AND HIGH-CONTRAST */}
+      <main className="w-full max-w-md flex-1 px-4.5 py-5 flex flex-col justify-start overflow-y-auto overflow-x-hidden relative z-10 pb-24">
         {children}
       </main>
 
-      {/* BOTTOM CONCENTRIC NAVIGATION BAR */}
-      <footer className="w-full max-w-md px-4 pb-4 absolute bottom-0 inset-x-0 z-20 pointer-events-none">
-        <div className={`w-full rounded-2xl border backdrop-blur-lg p-2 flex items-center justify-around shadow-2xl pointer-events-auto transition-all ${
+      {/* 4. FLOATING GLASS NAVIGATION CONTROL DOCK */}
+      <footer className="w-full max-w-md px-4 pb-4.5 absolute bottom-0 inset-x-0 z-20 pointer-events-none">
+        <div className={`w-full rounded-2xl border p-2 flex items-center justify-around shadow-xl pointer-events-auto transition-all ${
           theme === 'dark' 
-            ? 'bg-slate-950/80 border-amber-500/10 shadow-black/80' 
-            : 'bg-white/90 border-[#064e3b]/10 shadow-emerald-950/20'
+            ? 'bg-[#04110e]/90 border-emerald-800/15 shadow-black/60' 
+            : 'bg-white/95 border-emerald-900/10 shadow-emerald-950/10'
         }`}>
           {[
             { path: '/', label: 'الرئيسية', icon: Home },
@@ -316,25 +263,25 @@ export default function MoroccanLayout({
                   if (soundEnabled) soundEffects.playClick();
                   navigate(item.path);
                 }}
-                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 relative cursor-pointer ${
+                className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-300 relative cursor-pointer ${
                   isSelected 
                     ? theme === 'dark' 
-                      ? 'text-amber-400 bg-amber-500/10' 
-                      : 'text-emerald-800 bg-emerald-500/10 font-bold'
+                      ? 'text-amber-400 bg-amber-500/10 font-bold' 
+                      : 'text-emerald-900 bg-emerald-500/10 font-bold'
                     : theme === 'dark'
                       ? 'text-slate-400 hover:text-white'
-                      : 'text-emerald-950/60 hover:text-emerald-950'
+                      : 'text-emerald-950/50 hover:text-emerald-950'
                 }`}
               >
-                <IconComponent className="w-5 h-5 mb-0.5" />
+                <IconComponent className="w-4.5 h-4.5 mb-1" />
                 <span className="text-[10px] font-bold leading-none">{item.label}</span>
                 
-                {/* Visual active bubble indicator */}
+                {/* Visual active slider bar indicator */}
                 {isSelected && (
                   <motion.div 
                     layoutId="activeGlow" 
-                    className="absolute -bottom-1 w-5 h-1 rounded-full bg-amber-500"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    className="absolute -bottom-1 w-4.5 h-0.75 rounded-full bg-amber-500"
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
                   />
                 )}
               </button>
@@ -343,31 +290,31 @@ export default function MoroccanLayout({
         </div>
       </footer>
 
-      {/* MODAL WINDOW FOR SECRET ADMIN PASSWORD PROMPT */}
+      {/* 5. ADMIN AUTHENTICATION CARD PROMPT */}
       <AnimatePresence>
         {showAdminPrompt && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className={`w-full max-w-sm rounded-3xl p-6 shadow-2xl border text-center transition-all ${
+              exit={{ scale: 0.95, opacity: 0 }}
+              className={`w-full max-w-sm rounded-2xl p-6 shadow-2xl border text-center transition-all ${
                 theme === 'dark' 
-                  ? 'bg-slate-900 border-amber-500/25 text-slate-100' 
-                  : 'bg-white border-[#064e3b]/20 text-slate-900'
+                  ? 'bg-slate-900/95 border-amber-500/15 text-slate-100' 
+                  : 'bg-white border-emerald-900/10 text-slate-900'
               }`}
             >
-              <h2 className={`text-xl font-bold mb-3 ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-800'}`}>
+              <h2 className={`text-lg font-black mb-2 ${theme === 'dark' ? 'text-amber-400' : 'text-emerald-900'}`}>
                 الدخول كمسؤول التحدي
               </h2>
-              <p className="text-xs opacity-80 mb-5 leading-relaxed">
+              <p className="text-xs opacity-75 mb-5 leading-relaxed">
                 المرجو إدخال الرمز السري الخاص بالمسؤول لتعديل أو إضافة الأسئلة الثقافية والمراحل.
               </p>
 
-              <form onSubmit={handleAdminAccess} className="space-y-4">
+              <form onSubmit={handleAdminAccess} className="space-y-4 text-right">
                 <input 
                   type="password"
-                  placeholder=""
+                  placeholder="رمز المسؤول السري..."
                   value={adminCode}
                   onChange={(e) => {
                     setAdminCode(e.target.value);
@@ -375,20 +322,20 @@ export default function MoroccanLayout({
                   }}
                   className={`w-full px-4 py-3 rounded-xl text-center font-mono focus:outline-none focus:ring-2 select-text ${
                     theme === 'dark'
-                      ? 'bg-slate-800 border border-amber-500/20 text-amber-300 focus:ring-amber-500 ring-offset-slate-900'
-                      : 'bg-slate-100 border border-[#064e3b]/20 text-emerald-900 focus:ring-emerald-600 ring-offset-white'
+                      ? 'bg-slate-950 border border-amber-500/20 text-amber-300 focus:ring-amber-500'
+                      : 'bg-slate-100 border border-slate-200 text-emerald-900 focus:ring-emerald-600'
                   }`}
                   autoFocus
                 />
 
                 {adminError && (
-                  <p className="text-xs text-rose-500 font-bold">{adminError}</p>
+                  <p className="text-xs text-rose-500 text-center font-bold">{adminError}</p>
                 )}
 
                 <div className="flex space-x-2 space-x-reverse pt-2">
                   <button
                     type="submit"
-                    className="flex-1 py-3 px-4 bg-gradient-to-r from-amber-600 to-amber-500 text-slate-950 font-bold rounded-xl shadow-lg hover:from-amber-500 hover:to-yellow-400 active:scale-95 transition-all text-sm cursor-pointer"
+                    className="flex-1 py-3 px-4 bg-gradient-to-r from-amber-600 to-amber-500 text-slate-950 font-black rounded-xl shadow-md hover:from-amber-500 hover:to-yellow-400 active:scale-95 transition-all text-xs cursor-pointer"
                   >
                     تأكيد الدخول
                   </button>
@@ -400,7 +347,7 @@ export default function MoroccanLayout({
                       setAdminCode('');
                       setAdminError('');
                     }}
-                    className={`px-4 py-3 rounded-xl text-sm transition-all focus:outline-none cursor-pointer ${
+                    className={`px-4 py-3 rounded-xl text-xs font-bold transition-all focus:outline-none cursor-pointer ${
                       theme === 'dark' 
                         ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' 
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
