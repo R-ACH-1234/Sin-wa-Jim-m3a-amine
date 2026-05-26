@@ -88,7 +88,15 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       try {
         const parsed = JSON.parse(savedQuestionsStr);
         if (Array.isArray(parsed) && parsed.length === INITIAL_QUESTIONS.length) {
-          questionsList = parsed;
+          // Keep text/user edits but force stage alignments to match the official rebalanced INITIAL_QUESTIONS
+          questionsList = parsed.map(pq => {
+            const official = INITIAL_QUESTIONS.find(oq => oq.id === pq.id);
+            if (official) {
+              return { ...pq, stage: official.stage };
+            }
+            return pq;
+          });
+          localStorage.setItem('s_g_questions', JSON.stringify(questionsList));
         } else {
           questionsList = INITIAL_QUESTIONS;
           localStorage.setItem('s_g_questions', JSON.stringify(INITIAL_QUESTIONS));

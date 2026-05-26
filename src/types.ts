@@ -6,6 +6,7 @@ export interface Question {
   explanation: string;
   category: string;
   stage: number; // 3 questions per stage
+  difficulty?: 'easy' | 'medium' | 'hard'; // Question difficulty rating
 }
 
 export interface UserProfile {
